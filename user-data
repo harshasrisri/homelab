@@ -1,0 +1,30 @@
+#cloud-config
+
+#
+# https://cloudinit.readthedocs.io/
+#
+
+hostname: ${RPI_HNAME}
+ssh_pwauth: true
+users:
+- name: ansible
+  primary-group: users
+  shell: /bin/bash
+  sudo: ALL=(ALL) NOPASSWD:ALL
+  passwd: ${PI_PASSWD}
+  groups: users,adm,dialout,audio,plugdev,netdev,video
+  lock_passwd: true
+  ssh-authorized-keys:
+  - ${SSH_ID_PUB}
+
+package_update: true
+package_upgrade: true
+packages:
+  - avahi-daemon
+
+runcmd:
+  - 'sudo systemctl restart avahi-daemon'
+
+powerstate:
+  delay: "+5"
+  mode: reboot
