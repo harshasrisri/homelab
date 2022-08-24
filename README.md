@@ -2,6 +2,7 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [Clone Repo](#clone-repo)
 * [Prepare SD Card](#prepare-sd-card)
 * [Rack N Stack](#rack-n-stack)
 * [Install K3S](#install-k3s)
@@ -11,6 +12,12 @@
 * [Infra as Code (WIP)](#infra-as-code-wip)
 
 <!-- vim-markdown-toc -->
+
+## Clone Repo
+Clone this repo recursively with included submodules.
+```
+git clone --recursive https://github.com/harshasrisri/pi-cluster.git
+```
 
 ## Prepare SD Card
 We're using [Ubuntu Server](https://ubuntu.com/download/raspberry-pi) image for our Raspberry PIs in the cluster. We use the included `prepare_sdcard.sh` script to:
@@ -43,11 +50,15 @@ xpanes -C 5 --ssh ansible@pi-{01..15}
 
 ## Install K3S
 ### Pre-requisites
+On each of the Raspberry PI:
 - Run `sudo apt install linux-modules-extra-raspi` as per Rancher's docs to enable VxLan on Ubuntu Server for Raspberry PI
 - Run `sudo ufw allow proto tcp from 192.168.1.0/24 to any port 6443` to allow incoming traffic from `192.168.1.*` into port 6443
 
 ### Install
-Simplest way to install K3S has been to follow [K3S-Ansible](https://github.com/k3s-io/k3s-ansible). The version used at the time of setting up this cluster is saved here as a submodule.
+Simplest way to install K3S has been to follow [K3S-Ansible](https://github.com/k3s-io/k3s-ansible). The version used at the time of setting up this cluster is linked in this repo as a submodule. Make a link to our cluster config in the K3S submodule. Our config lists the hostnames of Pis used in the cluster and sets some server side arguments.
+```
+cd k3s-ansible/inventory && ln -s ../../my-cluster
+```
 
 ### Test
 Install `kubectl` on your local machine with `Homebrew` or your favorite package manager.
