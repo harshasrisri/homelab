@@ -108,10 +108,15 @@ configure_sdcard() {
     sleep 2s
     mount ${BOOT_PART} boot
     export RPI_HNAME
-    export PI_PASSWD=$(echo $PI_PASSWD | mkpasswd -sm yescrypt)
     export SSH_ID_PUB
-    cat user-data | envsubst > boot/user-data
-    cat boot/user-data >&2
+    # # using cloud-init on Ubuntu Server for R-PI
+    # export PI_PASSWD=$(echo $PI_PASSWD | mkpasswd -sm yescrypt)
+    # cat user-data | envsubst > boot/user-data
+    # cat network-config | envsubst > boot/network-config
+    # Using DietPi
+    export PI_PASSWD
+    cat dietpi.txt | envsubst > boot/dietpi.txt
+    echo ' group_enable=cpuset cgroup_enable=memory cgroup_memory=1' >> boot/cmdline.txt
     sync
     umount boot
     eject ${BOOT_PART}
@@ -124,9 +129,9 @@ prepare_sdcard() {
     display_header
     unmount_partitions
     write_image
-    edit_part_tbl
-    repair_fs
-    resize_fs
+    # edit_part_tbl
+    # repair_fs
+    # resize_fs
     eject_disk
     configure_sdcard
 }
