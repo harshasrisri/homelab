@@ -16,6 +16,8 @@ check_env_vars() {
     [ -z "${DEST_DISK}" ] && fatal "DEST_DISK not defined in env"
     [ -z "${RPI_HNAME}" ] && fatal "RPI_HNAME not defined in env"
     [ -z "${PI_PASSWD}" ] && fatal "PI_PASSWD not defined in env"
+    [ -z "${RPI_STATIC_IP_SUBNET_PREFIX}" ] && fatal "RPI_STATIC_IP_SUBNET_PREFIX not defined in env"
+    RPI_STATIC_IP_GATEWAY=${RPI_STATIC_IP_SUBNET_PREFIX}.1
     BOOT_PART=${DEST_DISK}1
     EXT4_PART=${DEST_DISK}2
     SSH_ID_PUB=$(cat ~/.ssh/id_rsa.pub)
@@ -43,6 +45,7 @@ display_header() {
     log "Ext4 Part: ${EXT4_PART}"
     log "Host Name: ${RPI_HNAME}"
     log "Pi Passwd: ${PI_PASSWD}"
+    log "Static IP: ${RPI_STATIC_IP}"
     sleep 3s
 }
 
@@ -107,16 +110,22 @@ configure_sdcard() {
     mkdir -p boot
     sleep 2s
     mount ${BOOT_PART} boot
+
     export RPI_HNAME
     export SSH_ID_PUB
+    export RPI_STATIC_IP
+    export RPI_STATIC_IP_GATEWAY
+
     # # using cloud-init on Ubuntu Server for R-PI
     # export PI_PASSWD=$(echo $PI_PASSWD | mkpasswd -sm yescrypt)
     # cat user-data | envsubst > boot/user-data
     # cat network-config | envsubst > boot/network-config
+
     # Using DietPi
     export PI_PASSWD
     cat dietpi.txt | envsubst > boot/dietpi.txt
     echo ' group_enable=cpuset cgroup_enable=memory cgroup_memory=1' >> boot/cmdline.txt
+
     sync
     umount boot
     eject ${BOOT_PART}
@@ -143,6 +152,7 @@ main() {
 
     for card in $(eval echo {${1}..${2}}); do
         RPI_HNAME="${RPI_BASE_HNAME}${card}"
+        RPI_STATIC_IP="${RPI_STATIC_IP_SUBNET_PREFIX}.$((card+10))"
         log
         log "Preparing card for $RPI_HNAME"
         prepare_sdcard > logs/${RPI_HNAME}.log
