@@ -152,6 +152,7 @@ main() {
 
     for card in $(eval echo {${1}..${2}}); do
         RPI_HNAME="${RPI_BASE_HNAME}${card}"
+        card=${card#0}
         RPI_STATIC_IP="${RPI_STATIC_IP_SUBNET_PREFIX}.$((card+10))"
         log
         log "Preparing card for $RPI_HNAME"
