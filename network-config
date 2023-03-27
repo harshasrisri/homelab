@@ -1,0 +1,21 @@
+---
+version: 2
+ethernets:
+  eth0:
+    dhcp4: no
+    addresses:
+      - ${RPI_STATIC_IP}
+    nameservers:
+      addresses:
+        - 1.1.1.1
+    routes:
+      - to: default
+        via: ${RPI_STATIC_IP_GATEWAY}
+
+# wifis:
+#   wlan0:
+#     dhcp4: true
+#     optional: true
+#     access-points:
+#       "Rivendell-IoT":
+#         password: "monterey"
