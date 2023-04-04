@@ -124,6 +124,8 @@ configure_sdcard() {
     # Using DietPi
     export PI_PASSWD
     cat dietpi.txt | envsubst > boot/dietpi.txt
+
+    # TODO: Below line appends to file after last newline. Need to append it before the last newline
     echo ' group_enable=cpuset cgroup_enable=memory cgroup_memory=1' >> boot/cmdline.txt
 
     sync
